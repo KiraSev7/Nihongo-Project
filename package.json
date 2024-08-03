@@ -1,22 +1,13 @@
 {
-  "name": "nihongo-project",
+  "name": "simple-auth-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "A simple authentication app",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.2",
-    "ejs": "^3.1.10",
-    "express": "^4.19.2",
-    "express-session": "^1.18.0",
-    "mongoose": "^8.5.2",
-    "passport": "^0.7.0",
-    "passport-local": "^1.0.0"
+    "express": "^4.17.3",
+    "express-session": "^1.17.3"
   }
 }
