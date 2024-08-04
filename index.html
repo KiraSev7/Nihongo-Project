@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanji Random Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        #kanji-container {
+            text-align: center;
+        }
+
+        #kanji-svg {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        #kanji-svg path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 3s forwards; /* Durasi animasi default */
+            stroke: #000;
+            fill: none;
+            stroke-width: 2;
+            animation-delay: var(--delay); /* Delay untuk animasi */
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="kanji-container">
+        <svg id="kanji-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+        <button id="random-kanji">Show Random Kanji</button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const kanjiContainer = document.getElementById('kanji-svg');
+            const randomKanjiButton = document.getElementById('random-kanji');
+
+            let kanjiData = {};
+
+            // Load kanji index
+            fetch('kvg-index.json')
+                .then(response => response.json())
+                .then(data => {
+                    kanjiData = data;
+                    showRandomKanji();
+                })
+                .catch(error => console.error('Error loading kanji index:', error));
+
+            function showRandomKanji() {
+                const keys = Object.keys(kanjiData);
+                if (keys.length === 0) return;
+
+                // Pick a random key (character)
+                const randomKey = keys[Math.floor(Math.random() * keys.length)];
+                const svgFiles = kanjiData[randomKey];
+                const randomFile = svgFiles[Math.floor(Math.random() * svgFiles.length)];
+                const kanjiFile = `kanji/${randomFile}`;
+
+                // Load and display the SVG file
+                fetch(kanjiFile)
+                    .then(response => response.text())
+                    .then(svg => {
+                        kanjiContainer.innerHTML = svg;
+                        // Apply animation delays to each path
+                        const paths = kanjiContainer.querySelectorAll('path');
+                        paths.forEach((path, index) => {
+                            path.style.setProperty('--delay', `${index * 0.5}s`);
+                        });
+                        // Trigger reflow to reset animation
+                        const svgElement = document.getElementById('kanji-svg');
+                        svgElement.classList.remove('animate');
+                        void svgElement.offsetWidth; // Trigger reflow
+                        svgElement.classList.add('animate');
+                    })
+                    .catch(error => console.error('Error loading kanji SVG:', error));
+            }
+
+            randomKanjiButton.addEventListener('click', showRandomKanji);
+        });
+    </script>
+</body>
+</html>
